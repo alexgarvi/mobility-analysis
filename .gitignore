@@ -1,2 +1,17 @@
+# Ignorar carpeta .vscode
+.vscode/*
+
+# Ignorar todos los archivos .parquet
+*.parquet
+
+# Ignorar todos los archivos .pyc
+*.pyc
+
+# Ignorar carpeta data
 data/*
+
+# Ignorar archivo data.zip
 data.zip
+
+# Ignorar entorno virtual
+venv/*

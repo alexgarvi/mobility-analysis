@@ -37,3 +37,4 @@ six==1.17.0
     # via python-dateutil
 tzdata==2025.2
     # via pandas
+pyarrow==22.0.0 --only-binary :all:
