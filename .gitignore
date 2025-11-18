@@ -15,3 +15,8 @@ data.zip
 
 # Ignorar entorno virtual
 venv/*
+
+# Ignorar db
+*.duckdb
+datalake.duckdb
+tests.py

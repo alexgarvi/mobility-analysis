@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS bronze_mitma_personas_gau (
-    date DATE,
+    date VARCHAR,
     zone VARCHAR,
     age VARCHAR,
     gender VARCHAR,
