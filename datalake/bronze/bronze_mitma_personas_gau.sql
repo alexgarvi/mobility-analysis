@@ -4,5 +4,5 @@ CREATE TABLE IF NOT EXISTS bronze_mitma_personas_gau (
     age VARCHAR,
     gender VARCHAR,
     travels VARCHAR,
-    ingestion_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    people VARCHAR
 )

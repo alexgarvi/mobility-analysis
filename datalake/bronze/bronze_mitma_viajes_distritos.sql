@@ -13,6 +13,5 @@ CREATE TABLE IF NOT EXISTS bronze_mitma_viajes_distritos (
     age VARCHAR,
     gender VARCHAR,
     travels VARCHAR,
-    travels_km VARCHAR,
-    ingestion_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    travels_km VARCHAR
 )
