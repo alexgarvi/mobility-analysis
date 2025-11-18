@@ -20,3 +20,4 @@ venv/*
 *.duckdb
 datalake.duckdb
 tests.py
+silvergold.py
