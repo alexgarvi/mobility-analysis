@@ -14,8 +14,6 @@ enriched_flows AS (
         zf.actual_flow,
         oz.longitude AS o_lon, oz.latitude AS o_lat,
         dz.longitude AS d_lon, dz.latitude AS d_lat,
-        --COALESCE(pop.population, 1000) AS origin_pop,
-        --COALESCE(eco.gdp, 100000) AS dest_economic_pull
         pop.population AS origin_pop,
         eco.gdp AS dest_economic_pull
     FROM zone_flows zf
@@ -31,8 +29,12 @@ SELECT
     origin_pop,
     dest_economic_pull,
     sqrt(pow(o_lon - d_lon, 2) + pow(o_lat - d_lat, 2)) AS euclidean_dist,
-    (origin_pop * dest_economic_pull) / (pow(euclidean_dist, 2) + 0.0001) AS theoretical_potential,
-    actual_flow / ((origin_pop * dest_economic_pull) / (pow(euclidean_dist, 2) + 0.0001)) AS infrastructure_gap_score
+    coalesce(
+        origin_pop * dest_economic_pull / nullif(pow(euclidean_dist, 2), 0),
+        0) AS theoretical_potential, --This way we manage the division by zero by converting to null first and then coalescing to 0
+    coalesce(
+        actual_flow / nullif(origin_pop * dest_economic_pull / nullif(pow(euclidean_dist, 2), 0), 0),
+        0) AS infrastructure_gap_score --This way we manage the division by zero by converting to null first and then coalescing to 0
 FROM enriched_flows
 WHERE euclidean_dist > 0
 ORDER BY infrastructure_gap_score DESC
