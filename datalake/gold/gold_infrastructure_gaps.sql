@@ -1,40 +1,34 @@
 CREATE OR REPLACE TABLE gold_infrastructure_gaps AS
 WITH zone_flows AS (
     SELECT 
-        origin_zone_id, 
-        destination_zone_id, 
-        SUM(trips_count) AS actual_flow
-    FROM silver_trips
-    GROUP BY origin_zone_id, destination_zone_id
+        pkZoneOrigin, 
+        pkZoneDestination, 
+        SUM(trips_count) AS actual_flow_trips
+    FROM gold_fact_trips
+    GROUP BY pkZoneOrigin, pkZoneDestination
 ),
 enriched_flows AS (
     SELECT
-        zf.origin_zone_id,
-        zf.destination_zone_id,
-        zf.actual_flow,
-        oz.longitude AS o_lon, oz.latitude AS o_lat,
-        dz.longitude AS d_lon, dz.latitude AS d_lat,
-        pop.population AS origin_pop,
-        eco.gdp AS dest_economic_pull
+        zf.pkZoneOrigin,
+        zf.pkZoneDestination,
+        zf.actual_flow_trips,
+        pop.population_people AS origin_population_people,
+        eco.gdp_euros AS dest_gdp_euros
     FROM zone_flows zf
-    JOIN silver_zones oz ON zf.origin_zone_id = oz.zone_id
-    JOIN silver_zones dz ON zf.destination_zone_id = dz.zone_id
-    LEFT JOIN silver_demographics pop ON oz.municipality_id = pop.municipality_id
-    LEFT JOIN silver_demographics eco ON dz.municipality_id = eco.municipality_id
-)
+    JOIN gold_dim_zones oz ON zf.pkZoneOrigin = oz.pkZone
+    JOIN gold_dim_zones dz ON zf.pkZoneDestination = dz.pkZone
+    LEFT JOIN gold_fact_demographics pop ON oz.pkZone = pop.pkZone
+    LEFT JOIN gold_fact_gdp eco ON dz.pkZone = eco.pkZone
+),
 SELECT
-    origin_zone_id,
-    destination_zone_id,
-    actual_flow,
-    origin_pop,
-    dest_economic_pull,
-    sqrt(pow(o_lon - d_lon, 2) + pow(o_lat - d_lat, 2)) AS euclidean_dist,
-    coalesce(
-        origin_pop * dest_economic_pull / nullif(pow(euclidean_dist, 2), 0),
-        0) AS theoretical_potential, --This way we manage the division by zero by converting to null first and then coalescing to 0
-    coalesce(
-        actual_flow / nullif(origin_pop * dest_economic_pull / nullif(pow(euclidean_dist, 2), 0), 0),
-        0) AS infrastructure_gap_score --This way we manage the division by zero by converting to null first and then coalescing to 0
-FROM enriched_flows
-WHERE euclidean_dist > 0
+    ef.pkZoneOrigin,
+    ef.pkZoneDestination,
+    ef.actual_flow_trips,
+    ef.origin_population_people,
+    ef.dest_gdp_euros,
+    fd.distance_meters,
+    ef.origin_population_people * ef.dest_gdp_euros / pow(fd.distance_meters, 2) AS theoretical_potential,
+    ef.actual_flow / ef.origin_population_people * ef.dest_gdp_euros / pow(fd.distance_meters, 2) AS infrastructure_gap_score
+FROM enriched_flows ef
+LEFT JOIN gold_fact_distances fd ON ef.pkZoneOrigin = fd.pkZoneA AND ef.pkZoneDestination = fd.pkZoneB
 ORDER BY infrastructure_gap_score DESC

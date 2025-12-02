@@ -4,5 +4,5 @@ SELECT
     "province" AS zone_type,
     branch AS economic_branch,
     cast(SUBSTRING(year, 1, 4) as INTEGER) AS year,
-    CAST(gdp AS DOUBLE) AS gdp_euros
+    COALESCE(CAST(gdp AS DOUBLE), 0) AS gdp_euros
 FROM bronze_ine_pib;

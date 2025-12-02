@@ -7,8 +7,8 @@ SELECT
     SUBSTRING(destination, 1, 2) AS destination_zone_id,
     activity_origin,
     activity_destination,
-    SUM(TRY_CAST(REPLACE(travels, ',', '.') AS DOUBLE)) AS trips_count,
-    SUM(TRY_CAST(REPLACE(travels_km, ',', '.') AS DOUBLE)) AS trips_km
+    SUM(TRY_CAST(COALESCE(REPLACE(travels, ',', '.'), 0) AS DOUBLE)) AS trips_count,
+    SUM(TRY_CAST(COALESCE(REPLACE(travels_km, ',', '.'), 0) AS DOUBLE)) AS trips_km
 FROM bronze_mitma_viajes_distritos
 
 UNION
@@ -21,8 +21,8 @@ SELECT
     destination AS destination_zone_id,
     activity_origin,
     activity_destination,
-    TRY_CAST(REPLACE(travels, ',', '.') AS DOUBLE) AS trips_count,
-    TRY_CAST(REPLACE(travels_km, ',', '.') AS DOUBLE) AS trips_km
+    SUM(TRY_CAST(COALESCE(REPLACE(travels, ',', '.'), 0) AS DOUBLE)) AS trips_count,
+    SUM(TRY_CAST(COALESCE(REPLACE(travels_km, ',', '.'), 0) AS DOUBLE)) AS trips_km
 FROM bronze_mitma_viajes_municipios
 
 UNION
@@ -35,6 +35,6 @@ SELECT
     SUBSTRING(destination, 1, 2) AS destination_zone_id,
     activity_origin,
     activity_destination,
-    SUM(TRY_CAST(REPLACE(travels, ',', '.') AS DOUBLE)) AS trips_count,
-    SUM(TRY_CAST(REPLACE(travels_km, ',', '.') AS DOUBLE)) AS trips_km
+    SUM(TRY_CAST(COALESCE(REPLACE(travels, ',', '.'), 0) AS DOUBLE)) AS trips_count,
+    SUM(TRY_CAST(COALESCE(REPLACE(travels_km, ',', '.'), 0) AS DOUBLE)) AS trips_km
 FROM bronze_mitma_viajes_gau

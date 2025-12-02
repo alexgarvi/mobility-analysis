@@ -2,12 +2,6 @@ ingestion_map = {
     'bronze_ine_empleo': './data/ine/empleo.csv',
     'bronze_ine_pib': './data/ine/pib.csv',
     'bronze_ine_poblacion': './data/ine/poblacion.csv',
-    'bronze_mitma_pernoctaciones_distritos': './data/mitma/records/distritos/pernoctaciones/',
-    'bronze_mitma_pernoctaciones_gau': './data/mitma/records/GAU/pernoctaciones/',
-    'bronze_mitma_pernoctaciones_municipios': './data/mitma/records/municipios/pernoctaciones/',
-    'bronze_mitma_personas_distritos': './data/mitma/records/distritos/personas/',
-    'bronze_mitma_personas_gau': './data/mitma/records/GAU/personas/',
-    'bronze_mitma_personas_municipios': './data/mitma/records/municipios/personas/',
     'bronze_mitma_viajes_distritos': './data/mitma/records/distritos/viajes/',
     'bronze_mitma_viajes_gau': './data/mitma/records/GAU/viajes/',
     'bronze_mitma_viajes_municipios': './data/mitma/records/municipios/viajes/',
@@ -18,6 +12,6 @@ ingestion_map = {
     'bronze_distritos_nombres': './data/mitma/zonificacion/distritos/nombres_distritos.csv',
     'bronze_poblacion_distritos': './data/mitma/zonificacion/distritos/poblacion_distritos.csv',
     'bronze_poblacion_municipios': './data/mitma/zonificacion/municipios/poblacion_municipios.csv',
-    'bronze_gaus_nombres': './data/mitma/zonificacion/gaus/nombres_gaus.csv',
-    'bronze_poblacion_gaus': './data/mitma/zonificacion/gaus/poblacion_gaus.csv'
+    'bronze_gaus_nombres': './data/mitma/zonificacion/gau/nombres_gaus.csv',
+    'bronze_poblacion_gaus': './data/mitma/zonificacion/gau/poblacion_gaus.csv'
 }

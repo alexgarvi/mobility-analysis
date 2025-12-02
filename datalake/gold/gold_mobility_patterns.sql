@@ -8,8 +8,8 @@ SELECT
     activity_origin,
     activity_destination,
     SUM(trips_count) AS total_trips,
-    AVG(trips_count) AS avg_trips_per_hour
-FROM silver_trips
+    approx_quantiles(trips_count, 0.5) AS median_trips_per_hour
+FROM gold_fact_trips
 GROUP BY 
     hour_of_day, 
     day_type, 

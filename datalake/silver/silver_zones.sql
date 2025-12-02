@@ -16,8 +16,7 @@ SELECT
     "municipality" as zone_type,
     mc.longitude,
     mc.latitude,
-    mn.name,
-    mp.population as population_people
+    mn.name
 FROM bronze_zona_municipios_centroides mc
 LEFT JOIN bronze_municipios_nombres mn
     ON mc.municipality_id = mn.municipality_id
@@ -29,8 +28,7 @@ SELECT
     "gau" as zone_type,
     gc.longitude,
     gc.latitude,
-    gn.name AS name,
-    gp.population AS population_people
+    gn.name AS name
 FROM bronze_zona_gaus_centroides gc
 LEFT JOIN bronze_gaus_nombres gn
     ON TRY_CAST(gc.gau_id AS VARCHAR) = gn.ID

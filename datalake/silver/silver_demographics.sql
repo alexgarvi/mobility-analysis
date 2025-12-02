@@ -6,7 +6,7 @@ SELECT
     NULL as age,
     NULL as nationality
     NULL as year,
-    cast(population as INTEGER) as population_people
+    COALESCE(cast(population as INTEGER), 0) as population_people
 FROM bronze_poblacion_distritos
 
 UNION
@@ -18,7 +18,7 @@ SELECT
     age,
     nationality,
     cast(year as INTEGER) as year,
-    cast(sum(total) as INTEGER) as population_people
+    COALESCE(cast(sum(total) as INTEGER), 0) as population_people
 FROM bronze_ine_poblacion
 GROUP BY
     SUBSTRING(municipality, 1, 2),
@@ -36,7 +36,7 @@ SELECT
     NULL as age,
     NULL as nationality,
     NULL as year,
-    cast(population as INTEGER) as population_people
+    COALESCE(cast(population as INTEGER), 0) as population_people
 FROM bronze_poblacion_gaus
 
 UNION
@@ -48,7 +48,7 @@ SELECT
     age,
     nationality,
     cast(year as INTEGER) as year,
-    cast(sum(total) as INTEGER) as population_people
+    COALESCE(cast(sum(total) as INTEGER), 0) as population_people
 FROM bronze_ine_poblacion
 GROUP BY
     SUBSTRING(province, 1, 2),

@@ -1,12 +1,6 @@
 # Pasa de los nombres de tablas a los títulos de mitma en 0 los que usan fechas y en 1 los que no
 mitma_titles = [
     {
-    'bronze_mitma_pernoctaciones_distritos': 'Pernoctaciones_distritos',
-    'bronze_mitma_pernoctaciones_gau': 'Pernoctaciones_GAU',
-    'bronze_mitma_pernoctaciones_municipios': 'Pernoctaciones_municipios',
-    'bronze_mitma_personas_distritos': 'Personas_dia_distritos',
-    'bronze_mitma_personas_gau': 'Personas_dia_GAU',
-    'bronze_mitma_personas_municipios': 'Personas_dia_municipios',
     'bronze_mitma_viajes_distritos': 'Viajes_distritos',
     'bronze_mitma_viajes_gau': 'Viajes_GAU',
     'bronze_mitma_viajes_municipios': 'Viajes_municipios'},
