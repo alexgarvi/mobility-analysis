@@ -142,10 +142,6 @@ if __name__ == "__main__":
             ingest_mitma_urls(urls[table], table)
         
         # INGESTAR ZONIFICACION
-
-        print(f"Ingesting bronze_mitma_relacion_ine_zonificacion")
-        url = get_mitma_urls_zonificacion('bronze_mitma_relacion_ine_zonificacion', root = root)
-        ingest_mitma_urls(url, 'bronze_mitma_relacion_ine_zonificacion')
         
         print(f"Ingesting bronze_zona_distritos_centroides")
         ingest_mitma_urls(['./data/mitma/zonificacion/distritos/distritos_centroides.csv'], 'bronze_zona_distritos_centroides')

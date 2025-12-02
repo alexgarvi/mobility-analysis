@@ -1,35 +1,30 @@
-from extractor.extractor import Extractor
+from pathlib import Path
+import duckdb
 
 def main():
-    INPUT_PATH = "data"
-    DATALAKE_PATH = "datalake"
-    BRONZE_PATH = DATALAKE_PATH + "/bronze"
+    con = duckdb.connect()
+    con.sql("INSTALL ducklake; LOAD ducklake;")
+    con.sql("INSTALL spatial; LOAD spatial;")
+    con.sql("INSTALL httpfs; LOAD httpfs;")
 
-    extractor = Extractor(
-        input_path=INPUT_PATH,
-        bronze_path=BRONZE_PATH
-    )
+    con.sql(f"""
+    ATTACH 'ducklake:my_ducklake.ducklake' AS my_ducklake;
 
-    ine_files = ["empleo", "pib", "poblacion"]
+    USE my_ducklake;
+        """)
 
-    for file in ine_files:
-        extractor.extract_ine(file)
+    # apply_sql_folder(con, "datalake/bronze")
+    apply_sql_folder(con, "datalake/silver")
+    apply_sql_folder(con, "datalake/gold")
 
-    print("INE extraction completed.")
+    con.close()
 
-    mitma = ["poblacion", "relacion_ine_zonificacionMitma"]
-
-    for file in mitma:
-        extractor.extract_mitma(file)
-
-    types = ["distritos", "gau", "municipios"]
-    entities = ["viajes", "personas", "pernoctaciones"]
-
-    for entity in entities:
-        for type in types:
-            extractor.extract_mitma_temporal(entity, type)
-
-    print("MITMA extraction completed.")
+def apply_sql_folder(con, folder):
+    sql_files = sorted(Path(folder).glob("*.sql"))
+    for sql_path in sql_files:
+        print(f"Executing {sql_path.name}")
+        con.execute(sql_path.read_text())
+        print(f"Executed {sql_path.name}")
 
 
 if __name__ == "__main__":

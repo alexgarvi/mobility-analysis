@@ -5,7 +5,6 @@ mitma_titles = [
     'bronze_mitma_viajes_gau': 'Viajes_GAU',
     'bronze_mitma_viajes_municipios': 'Viajes_municipios'},
     {
-    'bronze_mitma_relacion_ine_zonificacion': 'relacion_ine_zonificacionMitma.csv',
     'bronze_zona_distritos_centroides': 'zonificacion_distritos_centroides.shp',
     'bronze_zona_gaus_centroides': 'zonificacion_gaus_centroides.shp',
     'bronze_zona_municipios_centroides': 'zonificacion_municipios_centroides.shp'}]
