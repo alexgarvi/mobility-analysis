@@ -10,5 +10,7 @@ ingestion_map = {
     'bronze_distritos_nombres': './data/mitma/zonificacion/distritos/nombres_distritos.csv',
     'bronze_poblacion_distritos': './data/mitma/zonificacion/distritos/poblacion_distritos.csv',
     'bronze_gaus_nombres': './data/mitma/zonificacion/gau/nombres_gaus.csv',
-    'bronze_poblacion_gaus': './data/mitma/zonificacion/gau/poblacion_gaus.csv'
+    'bronze_poblacion_gaus': './data/mitma/zonificacion/gau/poblacion_gaus.csv',
+    'bronze_municipios_nombres': './data/mitma/zonificacion/municipios/nombres_municipios.csv',
+    'bronze_provincias': './data/mitma/zonificacion/provincias.csv'
 }
