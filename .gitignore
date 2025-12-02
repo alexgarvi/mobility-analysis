@@ -21,3 +21,8 @@ venv/*
 datalake.duckdb
 tests.py
 silvergold.py
+my_ducklake.ducklake.files/*
+*.ducklake
+
+pruebas.ipynb
+*Zone.Identifier
