@@ -106,6 +106,8 @@ if __name__ == "__main__":
     USE my_ducklake;
         """)
 
+    #INGESTION_MAP = {'bronze_festivos': './data/festivos.csv'}
+
     local = True
     if local:
         for table in INGESTION_MAP:

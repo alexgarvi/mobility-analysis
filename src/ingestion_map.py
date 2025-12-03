@@ -12,5 +12,6 @@ ingestion_map = {
     'bronze_gaus_nombres': './data/mitma/zonificacion/gau/nombres_gaus.csv',
     'bronze_poblacion_gaus': './data/mitma/zonificacion/gau/poblacion_gaus.csv',
     'bronze_municipios_nombres': './data/mitma/zonificacion/municipios/nombres_municipios.csv',
-    'bronze_provincias': './data/mitma/zonificacion/provincias.csv'
+    'bronze_provincias': './data/mitma/zonificacion/provincias.csv',
+    'bronze_festivos': './data/festivos.csv'
 }

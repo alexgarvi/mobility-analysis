@@ -15,6 +15,11 @@ def query_silver_table(filename):
 if __name__ == "__main__":
     con = duckdb.connect()
 
+    con.sql("""
+    INSTALL spatial;
+    LOAD spatial;
+""")
+
     con.sql(f"""
     ATTACH 'ducklake:my_ducklake.ducklake' AS my_ducklake;
 
