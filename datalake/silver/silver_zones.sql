@@ -16,7 +16,7 @@ SELECT
     'municipality' as zone_type,
     mc.lon,
     mc.lat,
-    mn.column2
+    mn.column2 as name
 FROM bronze_zona_municipios_centroides mc
 LEFT JOIN bronze_municipios_nombres mn
     ON mc.ID = mn.column1
@@ -38,7 +38,7 @@ UNION
 SELECT
     province_id AS zone_id,
     'province' as zone_type,
-    NULL AS longitude,
-    NULL AS latitude,
+    NULL AS lon,
+    NULL AS lat,
     province AS name
 FROM bronze_provincias;

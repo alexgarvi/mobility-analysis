@@ -14,9 +14,9 @@ UNION
 SELECT
     SUBSTRING(Municipios, 1, 2) as zone_id,
     'municipality' as zone_type,
-    Sexo,
-    Edad,
-    Nacionalidad,
+    Sexo as gender,
+    Edad as age,
+    Nacionalidad as nationality,
     cast(Periodo as INTEGER) as year,
     COALESCE(SUM(TRY_CAST(REPLACE(Total, '.', '') as INTEGER)), 0) as population_people
 FROM bronze_ine_poblacion
@@ -44,9 +44,9 @@ UNION
 SELECT
     SUBSTRING(Provincias, 1, 2) as zone_id,
     'province' as zone_type,
-    Sexo,
-    Edad,
-    Nacionalidad,
+    Sexo as gender,
+    Edad as age,
+    Nacionalidad as nationality,
     cast(Periodo as INTEGER) as year,
     COALESCE(SUM(TRY_CAST(REPLACE(Total, '.', '') as INTEGER)), 0) as population_people
 FROM bronze_ine_poblacion
