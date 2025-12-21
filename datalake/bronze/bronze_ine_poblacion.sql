@@ -1,10 +1,5 @@
 CREATE TABLE IF NOT EXISTS bronze_ine_poblacion (
-    total_nat VARCHAR,
-    province VARCHAR,
-    municipality VARCHAR,
-    gender VARCHAR,
-    age VARCHAR,
-    nationality VARCHAR,
-    year VARCHAR,
+    seccion VARCHAR,
+    fecha, VARCHAR,
     total INTEGER
 )

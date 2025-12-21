@@ -1,17 +1,17 @@
 MERGE INTO bronze_poblacion_gaus AS target
 USING source_query as source
-    ON target.ID = source.ID
+    ON target.ID = source.'01001'
 
 WHEN MATCHED THEN
     UPDATE SET
-        target.name = source.name
+        target.population = source.'2925.0'
 
 WHEN NOT MATCHED THEN 
     INSERT (
         ID,
-        name
+        population
     )
     VALUES (
-        source.ID,
-        source.name
+        source.'01001',
+        source.'2925.0'
     )

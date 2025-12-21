@@ -1,4 +1,4 @@
-MERGE INTO bronze_ine_pib AS target
+MERGE INTO bronze_ine_renta AS target
 USING source_query as source
     ON target.seccion = source.Codigo,
     AND target.fecha = source.Fecha
