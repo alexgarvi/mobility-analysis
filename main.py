@@ -1,31 +1,30 @@
-from pathlib import Path
 import duckdb
-
-def main():
+from src.mitma_bronze_loader import MITMA2023BronzeLoader
+from variables import AWS_ACCESS_KEY_ID, AWS_REGION, AWS_SECRET_ACCESS_KEY, BUCKET_NAME
+    
+def setup_duckdb():
     con = duckdb.connect()
+
+    con.sql("INSTALL httpfs; LOAD httpfs;")
     con.sql("INSTALL ducklake; LOAD ducklake;")
     con.sql("INSTALL spatial; LOAD spatial;")
-    con.sql("INSTALL httpfs; LOAD httpfs;")
 
+    # Credenciales S3
     con.sql(f"""
-    ATTACH 'ducklake:my_ducklake.ducklake' AS my_ducklake;
+        SET s3_region='{AWS_REGION}';
+        SET s3_access_key_id='{AWS_ACCESS_KEY_ID}';
+        SET s3_secret_access_key='{AWS_SECRET_ACCESS_KEY}';
+    """)
 
-    USE my_ducklake;
-        """)
-
-    # apply_sql_folder(con, "datalake/bronze")
-    apply_sql_folder(con, "datalake/silver")
-    apply_sql_folder(con, "datalake/gold")
-
-    con.close()
-
-def apply_sql_folder(con, folder):
-    sql_files = sorted(Path(folder).glob("*.sql"))
-    for sql_path in sql_files:
-        print(f"Executing {sql_path.name}")
-        con.execute(sql_path.read_text())
-        print(f"Executed {sql_path.name}")
-
+    return con
 
 if __name__ == "__main__":
-    main()
+    import logging
+    logging.basicConfig(level=logging.INFO)
+
+    con = setup_duckdb()
+    loader = MITMA2023BronzeLoader(con, BUCKET_NAME)
+
+    loader.load_year(year=2023)
+
+    con.close()

@@ -1,21 +1,21 @@
 import urllib.request
 import re
 import xml.etree.ElementTree as ET
-import mitma_titles
+import src.mitma_titles
 import duckdb
 from collections import defaultdict
-import ingestion_map
+import src.ingestion_map
 import glob
 import os
 
-INGESTION_MAP = ingestion_map.ingestion_map
+INGESTION_MAP = src.ingestion_map.ingestion_map
 
 MITMA_TITLES_RECORDS = mitma_titles.mitma_titles_records
 MITMA_TITLES_ZONIFICACION = mitma_titles.mitma_titles_zonificacion
 INE_TITLES = mitma_titles.ine_titles
 CENTROID_TITLES = mitma_titles.centroids_titles
 RSS = "https://movilidad-opendata.mitma.es/RSS.xml"
-DATE_PATTERN = r"2024070[8-9]"
+DATE_PATTERN = r"2023\d{4}"
 
 def get_rss():
     req = urllib.request.Request(RSS, headers={"User-Agent": "MITMA-RSS-parser"})
@@ -34,12 +34,8 @@ def get_mitma_urls(datestring, tablestring, root=None):
     for item in root.findall("./channel/item"):
         title = item.find('title').text
         url = item.find("link").text
-        #print(item.find("title").text)
-        #print(item.find("link").text)
 
         if re.search(f"{MITMA_TITLES_RECORDS[tablestring]}", title):
-            #print(title)
-            #print(url)
             urls.append(url)
     return urls
 
