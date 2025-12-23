@@ -1,10 +1,10 @@
 MERGE INTO bronze_municipios_nombres AS target
 USING source_query as source
-    ON target.ID = source.ID
+    ON target.ID = source.column1
 
 WHEN MATCHED THEN
     UPDATE SET
-        target.name = source.name
+        target.name = source.column2
 
 WHEN NOT MATCHED THEN 
     INSERT (
@@ -12,6 +12,6 @@ WHEN NOT MATCHED THEN
         name
     )
     VALUES (
-        source.ID,
-        source.name
+        source.column1,
+        source.column2
     )

@@ -1,15 +1,15 @@
-MERGE INTO bronze_zona_distritos_centroides AS target
+MERGE INTO bronze_zona_distritos_geometria AS target
 USING source_query as source
     ON target.distrito_id = source.ID
 
 WHEN MATCHED THEN
     UPDATE SET
-        target.centroid = source.geom
+        target.geometria = source.geom
 
 WHEN NOT MATCHED THEN 
     INSERT (
         distrito_id,
-        centroid
+        geometria
     )
     VALUES (
         source.ID,

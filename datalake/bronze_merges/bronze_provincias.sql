@@ -1,10 +1,10 @@
 MERGE INTO bronze_provincias AS target
 USING source_query as source
-    ON target.ID = source.ID
+    ON target.ID = source.province_id
 
 WHEN MATCHED THEN
     UPDATE SET
-        target.name = source.name
+        target.name = source.province
 
 WHEN NOT MATCHED THEN 
     INSERT (
@@ -12,6 +12,6 @@ WHEN NOT MATCHED THEN
         name
     )
     VALUES (
-        source.ID,
-        source.name
+        source.province_id,
+        source.province
     )
