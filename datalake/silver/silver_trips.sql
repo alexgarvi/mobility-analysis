@@ -1,7 +1,7 @@
 CREATE OR REPLACE TABLE silver_trips AS 
 SELECT
-    vd.date as date,
-    vd.period as period,
+    CAST(vd.date AS DATE) as date,
+    CAST(vd.period AS INTEGER) as period,
     vd.origin as origin_id,
     vd.destination as destination_id,
     SUM(CAST(vd.travels AS DOUBLE)) as travels,   
