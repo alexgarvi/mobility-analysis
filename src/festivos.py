@@ -1,8 +1,7 @@
 import holidays
 from datetime import date, timedelta
 
-if __name__ == "__main__":
-
+def generar_festivos(log=False):
     es_holidays = holidays.country_holidays("ES")
 
     d1 = date(2022, 1, 1)
@@ -17,11 +16,9 @@ if __name__ == "__main__":
         if day in es_holidays or day.weekday() == 5 or day.weekday() == 6:
             findes_o_festivos += f'{day}, {1 if day in es_holidays else 0}, {1 if day.weekday() > 4 else 1}\n'
     
-    print(findes_o_festivos)
+    if log:
+        print("generando festivos")
 
     with open('data/festivos.csv', 'w') as f:
         f.write(findes_o_festivos)
-        #print(day, day in es_holidays)
 
-    #es_holidays = holidays.country_holidays("ES")
-    #print(es_holidays.get('2024-01-01'))

@@ -1,7 +1,7 @@
 import urllib.request
 import re
 import xml.etree.ElementTree as ET
-import src.mitma_titles
+import mitma_titles
 import duckdb
 from collections import defaultdict
 import src.ingestion_map
