@@ -19,7 +19,7 @@ WITH model_inputs AS (
     JOIN silver_distances ds ON t.origin_id = ds.zone_a_id AND t.destination_id = ds.zone_b_id
 
     WHERE t.date BETWEEN '2023-01-01' AND '2023-12-31'
-    GROUP BY 1, 2, 3, ds.distance_meters
+    GROUP BY origin_id, destination_id, ds.distance_meters
 ),
 
 calibration_stats AS (

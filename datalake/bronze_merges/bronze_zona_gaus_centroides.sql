@@ -1,15 +1,15 @@
 MERGE INTO bronze_zona_gaus_centroides AS target
-USING source_query as source
+USING (source_query) as source
     ON target.gaus_id = source.ID
 
 WHEN MATCHED THEN
     UPDATE SET
-        target.centroid = source.geom
+        centroide = source.geom
 
 WHEN NOT MATCHED THEN 
     INSERT (
         gaus_id,
-        centroid
+        centroide
     )
     VALUES (
         source.ID,

@@ -1,4 +1,4 @@
 CREATE TABLE IF NOT EXISTS bronze_zona_gaus_centroides (
-    gaus_id INTEGER,
+    gaus_id VARCHAR,
     centroide GEOMETRY
 )

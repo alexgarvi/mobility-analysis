@@ -6,7 +6,7 @@ SELECT
         ELSE 'Weekday' 
     END AS day_type,
     SUM(travels) AS total_trips,
-    approx_quantiles(travels, 0.5) AS median_trips_per_hour
+    approx_quantile(travels, 0.5) AS median_trips_per_hour
 FROM silver_trips
 GROUP BY 
     period, 

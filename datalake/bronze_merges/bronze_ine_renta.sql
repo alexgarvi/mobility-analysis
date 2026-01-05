@@ -1,11 +1,11 @@
 MERGE INTO bronze_ine_renta AS target
-USING source_query as source
-    ON target.seccion = source.Codigo,
+USING (source_query) as source
+    ON target.seccion = source.Codigo
     AND target.fecha = source.Fecha
 
 WHEN MATCHED THEN
     UPDATE SET
-        target.total = source.Valor
+        total = source.Valor
 
 WHEN NOT MATCHED THEN 
     INSERT (
