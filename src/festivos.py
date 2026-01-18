@@ -4,8 +4,8 @@ from datetime import date, timedelta
 def generar_festivos(log=False):
     es_holidays = holidays.country_holidays("ES")
 
-    d1 = date(2022, 1, 1)
-    d2 = date(2023, 1, 1)
+    d1 = date(2023, 1, 1)
+    d2 = date(2023, 12, 31)
 
     delta = d2 - d1 
 

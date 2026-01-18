@@ -23,6 +23,8 @@ CENTROID_TITLES = mitma_titles.centroids_titles
 RSS = "https://movilidad-opendata.mitma.es/RSS.xml"
 DATE_PATTERN = r"2024070[8-9]" 
 
+r"202301[0-3][0-9]"
+
 def get_rss():
     if os.path.exists("data/RSS.xml"):
         with open("data/RSS.xml", "r") as f:

@@ -7,6 +7,7 @@ from airflow.hooks.base import BaseHook
 import boto3
 from botocore.exceptions import ClientError
 from datetime import date, timedelta
+import pandas as pd
 
 pg = BaseHook.get_connection("neon_postgres")
 aws = BaseHook.get_connection("aws_default")
@@ -133,6 +134,9 @@ def silver_dag():
         
         vcpu = 4
         memoryGB = 16
+        con = duckdb.connect()
+        secreto(con)
+        con.sql(query)
         return build_config(vcpu, memoryGB, query)
 
 
@@ -148,6 +152,9 @@ def silver_dag():
         
         vcpu = 4
         memoryGB = 16
+        con = duckdb.connect()
+        secreto(con)
+        con.sql(query)
         return build_config(vcpu, memoryGB, query)
 
 
@@ -232,12 +239,14 @@ def silver_dag():
         date_start = date(*context["params"]["date_start"])
         date_end = date(*context["params"]["date_end"])
         delta = date_end - date_start
-
+        current_date = pd.to_datetime(date_start)
+        final_date = pd.to_datetime(date_end)
 
         configs = []
 
         for i in range(delta.days + 1):
-            fecha = date_start + timedelta(days=i)       
+            fecha = date_start + timedelta(days=i)
+    
             query = f"""--sql
                 BEGIN TRANSACTION;
 
@@ -270,16 +279,22 @@ def silver_dag():
                 JOIN mapa_limpio md 
                     ON vd.destination = md.distrito_mitma
 
-                WHERE vd.date = '{fecha}'::DATE 
+                WHERE vd.date = '{fecha}'::DATE
                 
                 GROUP BY 
-                    1, 2, 3, 4;
+                    1, 2, 3, 4
+                
+                ORDER BY 
+                    origin_id ASC,
+                    destination_id ASC;
 
                 COMMIT;"""
-            
+
+
             vcpu = 8
             memoryGB = 32
             configs.append(build_config(vcpu, memoryGB, query))
+
 
         return configs
 
@@ -341,13 +356,13 @@ def silver_dag():
 
     silver_festivos_config = festivos_transform_config()
 
-    misc_transform = BatchOperator.partial(
-        task_id='transform_misc',
-        job_name='transform-misc-job',
-        job_queue='DuckJobQueue',
-        job_definition='DuckJobDefinition',
-        region_name='eu-central-1',
-    ).expand(container_overrides=[silver_relacion_config, silver_festivos_config])
+    # misc_transform = BatchOperator.partial(
+    #     task_id='transform_misc',
+    #     job_name='transform-misc-job',
+    #     job_queue='DuckJobQueue',
+    #     job_definition='DuckJobDefinition',
+    #     region_name='eu-central-1',
+    # ).expand(container_overrides=[silver_relacion_config, silver_festivos_config])
 
     silver_distance_config = distance_create_config()
 
@@ -399,15 +414,13 @@ def silver_dag():
 
     # Chaining ------------------------------------------------------------------------
 
-    [silver_relacion_config, silver_festivos_config] >> misc_transform
+    [silver_relacion_config, silver_festivos_config] >> trips_transform
 
     silver_geometrias_config >> geometry_transform >> distance_create
 
     silver_ine_config >> ine_transform
 
     create_silver >> silver_trips_configs >> trips_transform
-
-    misc_transform >> trips_transform
 
     silver_distance_config >> distance_create
 
