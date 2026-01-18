@@ -2,3 +2,6 @@
 pendulum
 duckdb
 apache-airflow-providers-amazon
+holidays
+pandas
+scikit-learn
