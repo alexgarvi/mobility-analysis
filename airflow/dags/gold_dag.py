@@ -346,7 +346,6 @@ ORDER BY gap_ratio ASC;
                     CREATE OR REPLACE TABLE gold_gravity_features AS
 
                     WITH trips AS (
-                        -- Agregación masiva inicial
                         SELECT 
                             origin_id, 
                             destination_id, 
@@ -362,20 +361,17 @@ ORDER BY gap_ratio ASC;
                         t.destination_id,
                         t.actual_trips,
                         
-                        -- Distancia segura (min 500m)
                         GREATEST(d.distance_meters, 500.0) as dist_meters,
                         
-                        -- Variables del modelo (Casteamos a DOUBLE para evitar overflow en multiplicaciones)
+
                         CAST(pop.poblacion AS DOUBLE) as P_i,
                         CAST(econ.renta_total_euros AS DOUBLE) as E_j,
-                        
-                        -- Gravedad Cruda pre-calculada: (P * E) / d^2
+
                         (CAST(pop.poblacion AS DOUBLE) * CAST(econ.renta_total_euros AS DOUBLE)) 
                             / POWER(GREATEST(d.distance_meters, 500.0), 2) as gravity_raw
 
                     FROM trips t
 
-                    -- JOINs con las tablas Silver
                     JOIN silver_distances d 
                         ON t.origin_id = d.origin_id 
                         AND t.destination_id = d.destination_id
@@ -405,43 +401,40 @@ ORDER BY gap_ratio ASC;
                     CREATE OR REPLACE TABLE gold_infrastructure_gaps AS
 
                     WITH ranked_data AS (
-                        -- 1. Detectamos outliers sobre los datos ya preparados
+
                         SELECT 
                             *,
-                            -- Ranking basado en rendimiento (Viajes reales vs Gravedad teórica)
+
                             PERCENT_RANK() OVER (ORDER BY actual_trips / NULLIF(gravity_raw, 0)) as percentile_rank
                         FROM gold_gravity_features
                     ),
 
                     clean_data AS (
-                        -- 2. Nos quedamos con el núcleo representativo (Quitamos el 5% inferior y superior)
+
                         SELECT * FROM ranked_data
                         WHERE percentile_rank BETWEEN 0.05 AND 0.95
                     ),
 
                     calibration AS (
-                        -- 3. Calculamos la constante K global usando solo datos limpios
+
                         SELECT 
                             SUM(actual_trips) / SUM(gravity_raw) as k_factor
                         FROM clean_data
                     )
 
-                    -- 4. Generamos el reporte final
+
                     SELECT 
                         c.origin_id,
                         c.destination_id,
                         
-                        -- Métricas Reales
                         c.actual_trips,
                         CAST(c.dist_meters AS INTEGER) as distance_meters,
                         
-                        -- Demanda Potencial ( El Modelo )
+
                         CAST(
                             (SELECT k_factor FROM calibration) * c.gravity_raw 
                         AS INTEGER) as potential_demand,
-                        
-                        -- GAP Ratio (Indicador de Negocio)
-                        -- Si es < 1: Hay menos viajes de los que la economía predice (¿Falta transporte?)
+
                         ROUND(
                             c.actual_trips / NULLIF((SELECT k_factor FROM calibration) * c.gravity_raw, 0)
                         , 4) as gap_ratio

@@ -92,8 +92,8 @@ def secreto(con):
     default_args={"owner": "Astro", "retries": 3},
     max_active_tasks=32,
     tags=["silver-transform"],
-    params = {"date_start": (2023, 1, 1),
-              "date_end": (2023, 12, 31)}
+    params = {"date_start": (2023, 4, 1),
+              "date_end": (2023, 4, 12)}
 )
 
 

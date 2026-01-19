@@ -126,8 +126,8 @@ def ine_urls(ids):
     default_args={"owner": "Astro", "retries": 3},
     max_active_tasks=32,
     tags=["ingestion"],
-    params = {"date_start": (2023, 1, 1),
-              "date_end": (2023, 12, 31),
+    params = {"date_start": (2023, 4, 1),
+              "date_end": (2023, 4, 15),
               "rss_url": "https://movilidad-opendata.mitma.es/RSS.xml"}
 )
 
