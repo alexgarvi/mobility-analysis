@@ -351,10 +351,10 @@ ORDER BY gap_ratio ASC;
                             origin_id, 
                             destination_id, 
                             SUM(travels) as actual_trips
-                        FROM silver_trips
-                        WHERE date BETWEEN '{date_start}' AND '{date_end}'
-                        ORDER BY origin_id, destination_id
+                        FROM silver_trips_filtrado
                         GROUP BY 1, 2
+                        ORDER BY origin_id, destination_id
+
                     )
 
                     SELECT 
@@ -391,9 +391,9 @@ ORDER BY gap_ratio ASC;
         vcpu = 8
         memoryGB = 32
 
-        con = duckdb.connect()
-        secreto(con)
-        con.sql(query)
+        # con = duckdb.connect()
+        # secreto(con)
+        # con.sql(query)
 
         return build_config(vcpu, memoryGB, query)
 
@@ -688,25 +688,25 @@ ORDER BY gap_ratio ASC;
     #     region_name='eu-central-1',
     # ).expand(container_overrides=[aggregate_gravity_config]) 
 
-    #gold_features_config = gravity_features_config()
+    gold_features_gravity_config = gravity_features_config()
 
-    # gold_features = BatchOperator.partial(
-    #     task_id='transform_features',
-    #     job_name='transform-features-job',
-    #     job_queue='DuckJobQueue',
-    #     job_definition='DuckJobDefinition',
-    #     region_name='eu-central-1',
-    # ).expand(container_overrides=[gold_features_config])    
+    gold_features_gravity = BatchOperator.partial(
+        task_id='transform_features',
+        job_name='transform-features-job',
+        job_queue='DuckJobQueue',
+        job_definition='DuckJobDefinition',
+        region_name='eu-central-1',
+    ).expand(container_overrides=[gold_features_gravity_config])    
 
-    #gold_gaps_config = infrastructure_gaps_config()
+    gold_gaps_config = infrastructure_gaps_config()
 
-    # gold_gaps = BatchOperator.partial(
-    #     task_id='transform_gaps',
-    #     job_name='transform-gaps-job',
-    #     job_queue='DuckJobQueue',
-    #     job_definition='DuckJobDefinition',
-    #     region_name='eu-central-1',
-    # ).expand(container_overrides=[gold_gaps_config])
+    gold_gaps_batch = BatchOperator.partial(
+        task_id='transform_gaps',
+        job_name='transform-gaps-job',
+        job_queue='DuckJobQueue',
+        job_definition='DuckJobDefinition',
+        region_name='eu-central-1',
+    ).expand(container_overrides=[gold_gaps_config])
 
     #gold_f = gold_features_config()
 
@@ -743,6 +743,8 @@ ORDER BY gap_ratio ASC;
     # aggregate_gravity_features >>gold_gaps_config >> gold_gaps
 
     filtrar_silver_configs >> filtrar_silver >> features_table >> daily_config >> gold_features >> cluster_daily_features
+
+    filtrar_silver >> gold_features_gravity_config >> gold_features_gravity >> gold_gaps_config >> gold_gaps_batch
 
     # cluster_daily_features
 
