@@ -97,8 +97,8 @@ def build_config(vcpu, memoryGB, query):
     tags=["gold-transform"],
     params = {"year": 2023,
               "date_start": (2023, 5, 8),
-              "date_end": (2023, 5, 8),
-              "polygon": "POLYGON((-1.58 37.84, -1.58 40.79, 0.72 40.79, 0.72 37.84, -1.58 37.84))"}
+              "date_end": (2023, 5, 14),
+              "polygon": "POLYGON((40.9 -1.7, 40.9 0.9, 37.8 0.9, 37.8 -1.7, 40.9 -1.7))"}
 )
 
 
@@ -229,7 +229,6 @@ ORDER BY gap_ratio ASC;
         secreto(con)
         con.sql(query)
         
-
 
     @task()
     def temporary_gravity_features_config(**context):
@@ -460,11 +459,67 @@ ORDER BY gap_ratio ASC;
         return build_config(vcpu, memoryGB, query)
 
 
+
+
+    @task()
+    def filter_silver_config(**context):
+        date_start = date(*context["params"]["date_start"])
+        date_end = date(*context["params"]["date_end"])
+        polygon = context["params"]["polygon"]
+        delta = date_end - date_start
+        configs = []
+
+        con = duckdb.connect()
+        secreto(con)
+        con.sql(f"""--sql
+                CREATE OR REPLACE TABLE silver_trips_filtrado AS
+                    SELECT 
+                        t.date,
+                        t.period, 
+                        t.origin_id,
+                        t.destination_id,
+                        t.travels
+                    FROM silver_trips t
+                    LIMIT 0; """)
+
+        for i in range(delta.days + 1):
+            fecha = date_start + timedelta(days=i)
+
+            query = f"""--sql
+                    INSERT INTO silver_trips_filtrado
+                    WITH zona_estudio AS (
+                        SELECT distrito_id
+                        FROM silver_geometries
+                        WHERE ST_Within(
+                            centroide, 
+                            ST_Transform(
+                                ST_GeomFromText('{polygon}'),
+                                'EPSG:4326', 
+                                'EPSG:25830'
+                            )
+                        )
+                    )
+                    SELECT 
+                        t.date,
+                        t.period,
+                        t.origin_id,
+                        t.destination_id,
+                        t.travels
+                    FROM silver_trips t
+                    INNER JOIN zona_estudio origen ON t.origin_id = origen.distrito_id
+                    INNER JOIN zona_estudio destino ON t.destination_id = destino.distrito_id
+                    WHERE 
+                        t.date = '{fecha}';"""
+            
+            configs.append(build_config(8, 32, query))
+
+        return configs
+
     @task()
     def create_intermediate_features_table():
         con = duckdb.connect()
         secreto(con)
-        con.sql("""
+        con.sql("""--sql
             CREATE OR REPLACE TABLE intermediate_daily_features AS
             SELECT * FROM (
                 WITH structure_template AS (
@@ -501,7 +556,7 @@ ORDER BY gap_ratio ASC;
                         SUM(travels) as hour_trips,
                         SUM(SUM(travels)) OVER () as day_total
                         
-                    FROM silver_trips
+                    FROM silver_trips_filtrado
                     WHERE date = '{day}' 
                     GROUP BY 1, 2
                 )
@@ -515,7 +570,6 @@ ORDER BY gap_ratio ASC;
                     FROM daily_data
                 )
                 ON hour IN (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)
-                -- Usamos COALESCE para que si una hora no tiene datos ponga 0.0 en vez de NULL
                 USING COALESCE(SUM(share), 0.0);
             """
 
@@ -658,6 +712,16 @@ ORDER BY gap_ratio ASC;
 
     #Daily patterns ------------------------------------------------------------------------
 
+    filtrar_silver_configs = filter_silver_config()
+
+    filtrar_silver = BatchOperator.partial(
+        task_id='filter_silver',
+        job_name='filter-silver-job',
+        job_queue='DuckJobQueue',
+        job_definition='DuckJobDefinition',
+        region_name='eu-central-1',
+    ).expand(container_overrides=filtrar_silver_configs)    
+
     features_table = create_intermediate_features_table()
 
     daily_config = daily_features_config()
@@ -678,7 +742,7 @@ ORDER BY gap_ratio ASC;
 
     # aggregate_gravity_features >>gold_gaps_config >> gold_gaps
 
-    features_table >> daily_config >> gold_features >> cluster_daily_features
+    filtrar_silver_configs >> filtrar_silver >> features_table >> daily_config >> gold_features >> cluster_daily_features
 
     # cluster_daily_features
 
